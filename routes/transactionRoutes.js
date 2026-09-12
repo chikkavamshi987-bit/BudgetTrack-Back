@@ -6,24 +6,22 @@ const app = express.Router();
 
 app.get('/summary', protectRoute, async (req, res) => {
   try {
-    const page = req.query.page || 1;
-    const limit = req.query.limit || 5;
-    const skip = (page -1) *limit;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
 
     const userId = new mongoose.Types.ObjectId(req.user._id);
-    const allData = await Addtran.find({userId:userId}).limit(limit).skip(skip);
-    console.log(allData)
-    const result = await Addtran.aggregate([
-      {
-        $match: { userId: userId }
-      },
-      {
-        $group: {
-          _id: "$type",
-          total: { $sum: "$amount" }
-        }
-      }
+
+    const [allData, totalCount] = await Promise.all([
+      Addtran.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Addtran.countDocuments({ userId })
     ]);
+
+    const result = await Addtran.aggregate([
+      { $match: { userId } },
+      { $group: { _id: "$type", total: { $sum: "$amount" } } }
+    ]);
+
     let totalIncome = 0;
     let totalExpense = 0;
 
@@ -35,6 +33,8 @@ app.get('/summary', protectRoute, async (req, res) => {
       }
     });
 
+    const totalPages = Math.ceil(totalCount / limit);
+
     res.send({
       status: "ok",
       data: {
@@ -43,13 +43,12 @@ app.get('/summary', protectRoute, async (req, res) => {
         totalExpense,
         balance: totalIncome + totalExpense,
         currentPage: page,
-        totalPages:Math.ceil(allData.length / limit)
+        totalPages
       }
     });
-
   } catch (error) {
     console.log("Error while getting summary", error);
-    res.send({ status: 'error', data: error });
+    res.send({ status: "error", data: error });
   }
 });
 
