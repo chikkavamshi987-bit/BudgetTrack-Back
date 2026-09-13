@@ -2,7 +2,13 @@ import fs from 'fs';
 import { getApps, initializeApp, cert } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
 
-const serviceAccountPath = './serviceAccountKey.json';
+
+
+const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+
+if (!serviceAccountPath) {
+  throw new Error('GOOGLE_APPLICATION_CREDENTIALS must point to the Render uploaded service account key file.');
+}
 
 if (getApps().length === 0) {
   const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
