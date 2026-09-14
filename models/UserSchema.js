@@ -24,7 +24,8 @@ const userSchema = new mongoose.Schema({
         type:String,
         unique:true,
         sparse:true,
-        trim:true
+        trim:true,
+        default:null
     },
     otp:String,
     isVerified:{

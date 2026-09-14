@@ -21,7 +21,7 @@ app.get("/",(req,res)=>{
 
 app.use('/api/auth',authRoute);
 app.use('/api/tran',transactionRoute);
-app.use('/api/noti', notificationRoute);
+app.use('/api', notificationRoute);
 
 app.listen(PORT,()=>{
     console.log(`your are running on ${PORT}`)
