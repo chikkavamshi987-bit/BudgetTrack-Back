@@ -20,6 +20,13 @@ const userSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    fcmToken:{
+        type:String,
+        unique:true,
+        sparse:true,
+        trim:true,
+        default:null
+    },
     otp:String,
     isVerified:{
         type:Boolean,
