@@ -6,16 +6,18 @@ import User from '../models/UserSchema.js';
 const app = express.Router();
 
 app.post('/save-fcm-token', protectRoute, async (req, res) => {
-  try {
-    const { token } = req.body;
-    
-    console.log('[save-fcm-token] route hit', {
+  const { token } = req.body;
+
+  console.log('[save-fcm-token] route hit', {
     userId: req.user?._id,
     email: req.user?.email,
     tokenProvided: Boolean(token),
     tokenLength: token?.length,
     timestamp: new Date().toISOString()
   });
+
+  try {
+
     if (!token) {
       return res.status(400).json({ success: false, message: 'FCM token is required' });
     }
