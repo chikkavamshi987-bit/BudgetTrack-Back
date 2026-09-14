@@ -15,7 +15,7 @@ export const transporter = nodemailer.createTransport({
 
 transporter.verify((error) => {
     if (error) {
-        console.error('SMTP connection failed:', error);
+        console.error('SMTP Error Details:', JSON.stringify(error, null, 2));
     } else {
         console.log('SMTP server is ready');
     }
