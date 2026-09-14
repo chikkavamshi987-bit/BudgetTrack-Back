@@ -8,7 +8,14 @@ const app = express.Router();
 app.post('/save-fcm-token', protectRoute, async (req, res) => {
   try {
     const { token } = req.body;
-
+    
+    console.log('[save-fcm-token] route hit', {
+    userId: req.user?._id,
+    email: req.user?.email,
+    tokenProvided: Boolean(token),
+    tokenLength: token?.length,
+    timestamp: new Date().toISOString()
+  });
     if (!token) {
       return res.status(400).json({ success: false, message: 'FCM token is required' });
     }
