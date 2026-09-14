@@ -2,12 +2,10 @@ import fs from 'fs';
 import { getApps, initializeApp, cert } from 'firebase-admin/app';
 import { getMessaging } from 'firebase-admin/messaging';
 
+const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS || '/etc/secrets/serviceAccountKey.json';
 
-
-const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
-if (!serviceAccountPath) {
-  throw new Error('GOOGLE_APPLICATION_CREDENTIALS must point to the Render uploaded service account key file.');
+if (!fs.existsSync(serviceAccountPath)) {
+  throw new Error(`Firebase service account file not found at ${serviceAccountPath}. Set GOOGLE_APPLICATION_CREDENTIALS to /etc/secrets/serviceAccountKey.json on Render.`);
 }
 
 if (getApps().length === 0) {
