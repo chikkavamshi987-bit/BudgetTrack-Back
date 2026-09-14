@@ -1,22 +1,32 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import dns from 'dns';
+import net from 'net';
 
-dotenv.config();
+dns.lookup('smtp.gmail.com', (error, address, family) => {
+    if (error) {
+        console.error('DNS lookup failed:', error);
+        return;
+    }
 
-export const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
+    console.log('Gmail SMTP resolved to:', address);
+    console.log('IP family:', family);
 });
 
-transporter.verify((error) => {
-    if (error) {
-        console.error('SMTP connection failed:', error);
-    } else {
-        console.log('SMTP server is ready');
-    }
+const socket = net.createConnection({
+    host: 'smtp.gmail.com',
+    port: 587,
+    timeout: 10000,
+});
+
+socket.on('connect', () => {
+    console.log('SMTP TCP connection successful');
+    socket.end();
+});
+
+socket.on('timeout', () => {
+    console.error('SMTP TCP connection timed out');
+    socket.destroy();
+});
+
+socket.on('error', (error) => {
+    console.error('SMTP TCP connection failed:', error);
 });
